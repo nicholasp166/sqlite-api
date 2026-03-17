@@ -6,8 +6,6 @@
     <title>Main Page</title>
   </head>
   <body>
-    {{ message }} or {% set message = "Hello World" %} {{ message }} <br />
-
     <h1>List of databases:</h1>
     {% for db in databases %}
     <div><a href="/databases/{{db}}">{{ db }}</a></div>

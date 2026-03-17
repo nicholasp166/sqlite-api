@@ -1,14 +1,3 @@
-'''
-we're going to create the class to manage the database
-
-so im thinking we have a list of database each of class like "db" this is going to represent the entire db not like
-tables and what not
-
-also maybe we should come up with creating db too maybe idrk
-
-
-how do we call the class 
-'''
 import sqlite3
 
 

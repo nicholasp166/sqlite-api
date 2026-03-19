@@ -10,9 +10,11 @@ class TableRequest(BaseModel):
     obj: list[str]
 
 
-
 def showDB():
-    return os.listdir("database")
+    if os.listdir("database"):
+        return os.listdir("database")
+    else:
+        return ["No DBs found"]
 
 
 app = FastAPI()
@@ -27,23 +29,30 @@ async def index(request: Request):
         "databases": showDB(),
     })
 
-@app.post("/databases/createTable/{dbName}")
+@app.post("/database/createTable/{dbName}")
 async def createTable(dbName: str, body: TableRequest):
     with DBService(dbName) as dbs:
         dbs.addTable(body.name, body.obj)
 
-    return RedirectResponse(url=f"/databases/{dbName}", status_code=303)
+    return RedirectResponse(url=f"/database/{dbName}", status_code=303)
+  
+@app.post("/database/createDatabase/{dbName}")
+async def createDatabase(dbName: str):
+    DBService.create(dbName)
+    return RedirectResponse(url=f"/database/{dbName}", status_code=303)
   
 
-@app.get("/databases/{dbName}")
+@app.get("/database/{dbName}")
 async def getDatabase(dbName: str, request: Request):
-    with DBService(dbName) as dbs:
-        tables = dbs.getAlltables()
-  
-    return templates.TemplateResponse("database.html", {
-        "request":request,
-        "database": tables
-    })
+    try:
+        with DBService(dbName) as dbs:
+            tables = dbs.getAlltables()
+        return templates.TemplateResponse("database.html", {
+            "request":request,
+            "database": tables
+        })
+    except:
+        return RedirectResponse(url="/", status_code=303)
 
 @app.get("/health")
 async def health_check():

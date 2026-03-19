@@ -1,4 +1,5 @@
 import sqlite3
+import os
 
 
 class DBService:
@@ -8,6 +9,9 @@ class DBService:
         self.cursor = None
 
     def __enter__(self):
+        db_path = f"database/{self.name}"
+        if not os.path.exists(db_path):
+            raise FileNotFoundError(f"Database '{self.name}' does not exist.")
         self.conn = sqlite3.connect(f"database/{self.name}")
         self.cursor = self.conn.cursor()
         print(f"connection established for {self.name}")
@@ -20,7 +24,13 @@ class DBService:
             self.conn.commit()    # commit on success
         self.cursor.close()
         self.conn.close()
-        
+    
+    @staticmethod
+    def create(dbName):
+        if not os.path.exists("database"):
+            os.makedirs("database", exist_ok=True)
+        if not os.path.exists(f"database/{dbName}"):
+           return open(f"database/{dbName}.sqlite3",'a').close()
 
     def getAlltables(self):
         if self.cursor is None:

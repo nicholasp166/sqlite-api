@@ -7,10 +7,12 @@
   </head>
   <body>
     <h1>List of databases:</h1>
-    {% for db in databases %} {% if db != "No DBs found" %}
-    <div><a href="/database/{{db}}">{{ db }}</a></div>
-    {% else %}
-    <div>{{ db }}</div>
-    {% endif %} {% endfor %}
+    {% for db in databases %}
+      {% if db != "No DBs found" %}
+        <div><a href="/database/{{db}}">{{ db }}</a></div>
+      {% else %}
+        <div>{{ db }}</div>
+      {% endif %}
+    {% endfor %}
   </body>
 </html>

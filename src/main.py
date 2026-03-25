@@ -1,6 +1,7 @@
-from fastapi import FastAPI, Request #type: ignore
+from fastapi import FastAPI, Request, Query, Body, Form #type: ignore
 from fastapi.templating import Jinja2Templates # type: ignore
 from fastapi.responses import RedirectResponse # type: ignore
+import json
 import os
 from services import DBService
 from pydantic import BaseModel #type: ignore
@@ -45,11 +46,13 @@ async def createDatabase(dbName: str):
 async def getTable(dbName: str, request: Request, tableName:str):
     try:
         with DBService(dbName) as dbs:
-            tableSchema = tableSchema = dbs.executeSQL(f"PRAGMA table_info('{tableName}')")
+            tableSchema = dbs.executeSQL(f"PRAGMA table_info('{tableName}')")
+            tableData = dbs.executeSQL(f"SELECT * FROM {tableName}")
         return templates.TemplateResponse("table.html", {
-            "request":request,
+            "request": request,
             "table": tableSchema,
-            "dbName":dbName
+            "data": tableData,
+            "dbName": dbName
         })
     except Exception as e:
         return {"error": str(e)}
@@ -68,6 +71,19 @@ async def getDatabase(dbName: str, request: Request):
     except:
         return RedirectResponse(url="/", status_code=303)
 
+
+@app.post("/database/{dbName}/{tableName}/insert")
+async def insert(dbName: str, tableName:str, values: list[str] = Form(...) , columns: list[str]= Form(...) ):
+    try:
+        with DBService(dbName) as dbs:
+            params = ', '.join(['?' for _ in values])
+            insql = f"INSERT INTO {tableName} ({', '.join(columns)}) VALUES ({params})"
+            res = dbs.executeSQL(insql, values)
+            print(f"RESULTS: {res}")
+        return RedirectResponse(url=f"/database/{dbName}/{tableName}", status_code=303)
+    except Exception as e:
+        print(f"Insert error: {e}")
+        return RedirectResponse(url="/", status_code=303)
 
 @app.get("/health")
 async def health_check():

@@ -41,5 +41,30 @@
         {% endfor %}
       </tbody>
     </table>
+
+    <h2>Table Data</h2>
+    <table>
+      <thead>
+        <tr><th>Index</th>
+          {% for col in table %}
+          <th>{{ col[1] }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data %}
+        <tr>
+          <td>{{loop.index}}</td>
+          {% for cell in row %}
+            <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="{{ table|length }}">No data in table</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </body>
 </html>

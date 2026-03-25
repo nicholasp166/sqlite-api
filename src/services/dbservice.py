@@ -48,11 +48,14 @@ class DBService:
         safe_params = [p.replace(" ", "_") for p in params]
         self.cursor.execute(f"CREATE TABLE {tableName} ({', '.join(safe_params)})")
 
-    def executeSQL(self, query):
+    def executeSQL(self, query, params=None):
         if self.cursor is None:
             return "Internal Error w/ DB missing cursor."
         print(query)
-        res = self.cursor.execute(query)
+        if params:
+            res = self.cursor.execute(query, params)
+        else:
+            res = self.cursor.execute(query)
         arr = res.fetchall()
         print(arr)
-        return arr if arr else ["No data to be returned"]
+        return arr if arr else []
